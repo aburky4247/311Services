@@ -186,6 +186,59 @@ def fetch_311_batch(offset=0, limit=BATCH_SIZE):
 # define import_to_raw using fetch_311_batch and keep pulling data until fetch_311_batch is empty (i.e. failed or where_clause prevented any data from being pulled)
 
 
+def insert_to_raw(df):
+    for _, row in df.iterrows():
+        cursor.execute("""
+        INSERT OR IGNORE INTO 'raw_311_service_requests' (
+                unique_key,
+                created_date,
+                closed_date,
+                agency,
+                agency_name,
+                complaint_type,
+                descriptor,
+                location_type,
+                incident_zip,
+                incident_address,
+                street_name,
+                cross_street_1,
+                cross_street_2,
+                intersection_street_1,
+                intersection_street_2,
+                address_type,
+                city,
+                landmark,
+                facility_type,
+                status,
+                due_date,
+                resolution_description,
+                resolution_action_updated_date,
+                community_board,
+                bbl,
+                borough,
+                x_coordinate_state_plane,
+                y_coordinate_state_plane,
+                open_data_channel_type,
+                park_facility_name,
+                park_borough,
+                vehicle_type,
+                taxi_company_borough,
+                taxi_pick_up_location,
+                bridge_highway_name,
+                bridge_highway_direction,
+                road_ramp,
+                bridge_highway_segment,
+                latitude,
+                longitude,
+                location
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT (unique_key) DO NOTHING;
+        """,
+                       (row['unique_key'], row['created_date'], row['closed_date'], row['agency'], row['agency_name'], row['complaint_type'], row['descriptor'], row['location_type'], row['incident_zip'], row['incident_address'], row['street_name'], row['cross_street_1'], row['cross_street_2'], row['intersection_street_1'], row['intersection_street_2'], row['address_type'], row['city'], row['landmark'], row['facility_type'], row['status'], row['due_date'], row['resolution_description'], row['resolution_action_updated_date'], row['community_board'], row['bbl'], row['borough'], row['x_coordinate_state_plane'], row['y_coordinate_state_plane'], row['open_data_channel_type'], row['park_facility_name'], row['park_borough'], row['vehicle_type'], row['taxi_company_borough'], row['taxi_pick_up_location'], row['bridge_highway_name'], row['bridge_highway_direction'], row['road_ramp'], row['bridge_highway_segment'], row['latitude'], row['longitude'], row['location']))
+
+    conn.commit()
+
+
 def import_to_raw():
 
     offset = 0
@@ -196,8 +249,7 @@ def import_to_raw():
         if df.empty:
             break
 
-        df.to_sql('raw_311_service_requests', conn,
-                  if_exists="append", index=False)
+        insert_to_raw(df)
         total_rows += len(df)
 
         offset += BATCH_SIZE
