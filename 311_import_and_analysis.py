@@ -4,6 +4,7 @@ import sqlite3 as sq
 from io import StringIO
 from datetime import datetime, timedelta
 from time import sleep
+import matplotlib.pyplot as plt
 
 pd.set_option('display.max_columns', None)
 
@@ -503,3 +504,47 @@ Additionally, the Department of Health and MEntal Hygiene has 11 percent of requ
 Economic Development Corporation has 75 percent of requests non-closed, however they are all In Progress. 
 Thankfully, no agency has a significant percent of requests sitting open or unspecified""")
 Question3
+
+# Question 4: On average how long does it take from created_date to closed_date by agency? PYTHON
+
+conn = sq.connect(DB)
+
+df = pd.read_sql_query("""
+SELECT
+    agency_name,
+    created_date,
+    closed_date
+FROM store_311_service_requests sr
+LEFT JOIN store_311_agencies a
+    ON a.agency = sr.agency
+WHERE 
+    created_date IS NOT NULL
+    AND closed_date IS NOT NULL
+    AND agency_name IS NOT NULL;
+""", conn)
+
+conn.close()
+
+df["created_date"] = pd.to_datetime(df["created_date"], errors="coerce")
+df["closed_date"] = pd.to_datetime(df["closed_date"], errors="coerce")
+
+df = df.dropna(subset=["created_date", "closed_date"])
+
+df["days_to_close"] = (df["closed_date"] - df["created_date"]
+                       ).dt.total_seconds() / (24 * 3600)
+
+Question4 = (
+    df.groupby("agency_name")["days_to_close"]
+    .agg(
+        avg_days_to_close="mean",
+        std_days_to_close="std",
+        count="count"
+    )
+    .reset_index()
+)
+
+Question4["avg_days_to_close"] = Question4["avg_days_to_close"].round(2)
+Question4["std_days_to_close"] = Question4["std_days_to_close"].round(2)
+
+print("On average how long does it take from created_date to closed_date by agency?")
+print(Question4)
