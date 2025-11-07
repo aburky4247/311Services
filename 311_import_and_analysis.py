@@ -160,7 +160,7 @@ if max_created_date or max_resolution_date:
     if max_created_date:
         filters.append(f"created_date >= '{max_created_date}'")
     where_clause = " OR ".join(filters)
-    print(f"🔁 Incremental pull:\n{where_clause}")
+    print(f"Incremental pull:\n{where_clause}")
 else:
     where_clause = (
         f"created_date between '{start_date.strftime('%Y-%m-%dT00:00:00')}' "
@@ -430,7 +430,7 @@ GROUP BY
 print("How many service requests are status = closed with no resolution or status <> closed with a resolution and is it concentrated on any particular agency?")
 print("""Per the below table, Department of Buildings has 21,524 requests that are open but marked resolved, making up 20 percent of their total request count
 Additionally, the Department of Parks and Recreation has a significant number of requests In Progress while marked Resolved""")
-Question1
+print(Question1)
 
 
 # Question 2: How many service requests are there with status = closed and no closed date or status <> closed and have a closed date and is it concentrated on any particular agency?
@@ -475,7 +475,7 @@ print("How many service requests are there with status = closed and no closed da
 print("""Per the below table, Department of Buildings has 21,524 requests that are not closed but have a closed date, making up 20 percent of their total request count
 these are likely the same requests that are also marked resolved, meaning the Status field should be updated for these - checking the status field, they are either Open or Assigned.
 Additionally, the Department of Homeless Services has a 20 percent of requests Closed with no Closed Date""")
-Question2
+print(Question2)
 
 # Question 3: Which Agency has the most non-closed service requests, and of the non-closed, how many are unspecified or open?
 
@@ -503,7 +503,7 @@ print("""Per the below table, the 21,524 problem service requests from the Depar
 Additionally, the Department of Health and MEntal Hygiene has 11 percent of requets non-closed, however most of them are in progress.
 Economic Development Corporation has 75 percent of requests non-closed, however they are all In Progress. 
 Thankfully, no agency has a significant percent of requests sitting open or unspecified""")
-Question3
+print(Question3)
 
 # Question 4: On average how long does it take from created_date to closed_date by agency? PYTHON
 
