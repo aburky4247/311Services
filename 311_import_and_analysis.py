@@ -557,3 +557,45 @@ print(""""Per the below table, the Department of Building, Department of Parks a
 and significant standard deviation. Additionally, the Office of the Sheriff, Economic Development Corporation, and Department of Education have high avg_days_to_close,
 however they have a significantly smaller sample size""")
 print(Question4)
+
+
+# Question 5: How many service requests come per month, per borough, and does one borough stand out? PYTHON
+
+conn = sq.connect(DB)
+
+df = pd.read_sql_query("""
+SELECT
+    borough,
+    created_date
+FROM store_311_service_requests sr
+WHERE 
+    created_date IS NOT NULL;
+""", conn)
+conn.close()
+
+df["created_date"] = pd.to_datetime(df["created_date"], errors="coerce")
+
+df = df.dropna(subset=["created_date"])
+
+df["month"] = df["created_date"].dt.to_period("M").astype(str)
+
+counts = (
+    df.groupby(["month", "borough"])
+    .size()
+    .unstack(fill_value=0)
+)
+
+plt.figure(figsize=(12, 6))
+counts.plot(kind="bar", stacked=True, colormap="tab20", figsize=(14, 7))
+
+print("How many service requests come per month, per borough, and does one borough stand out?")
+print("""Per the chart below, requests are relatively distributed by month, with a slight spike in January 25 (potentially from holiday backlog).
+Most requests are for Queens and Brooklyn, with the Bronx having a spike in January 25""")
+
+plt.title("NYC 311 Service Requests by Month and Borough", fontsize=14)
+plt.xlabel("Month (Created Date)", fontsize=12)
+plt.ylabel("Count of Requests", fontsize=12)
+plt.xticks(rotation=45, ha="right")
+plt.legend(title="Agency", bbox_to_anchor=(1.05, 1), loc="upper left")
+plt.tight_layout()
+plt.show()
