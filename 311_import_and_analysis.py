@@ -475,3 +475,31 @@ print("""Per the below table, Department of Buildings has 21,524 requests that a
 these are likely the same requests that are also marked resolved, meaning the Status field should be updated for these - checking the status field, they are either Open or Assigned.
 Additionally, the Department of Homeless Services has a 20 percent of requests Closed with no Closed Date""")
 Question2
+
+# Question 3: Which Agency has the most non-closed service requests, and of the non-closed, how many are unspecified or open?
+
+Question3 = pd.read_sql_query("""
+SELECT DISTINCT
+    a.agency_name,
+    sr.status,
+    count(*) AS Count,
+    total_count_by_agency,
+    CAST(count(*)/total_count_by_agency AS TEXT) AS percent_of_total_count
+FROM store_311_service_requests sr
+LEFT JOIN store_311_agencies a
+    ON sr.agency = a.agency
+LEFT JOIN ref_311_request_count_by_agency ac
+    ON sr.agency = ac.agency
+WHERE 
+    sr.Status <> 'Closed'
+GROUP BY
+    a.agency_name,
+    sr.status
+""", conn)
+
+print("""Which Agency has the most non-closed service requests, and of the non-closed, how many are unspecified or open?""")
+print("""Per the below table, the 21,524 problem service requests from the Department of Buildings in the prior two tests have appeared again.
+Additionally, the Department of Health and MEntal Hygiene has 11 percent of requets non-closed, however most of them are in progress.
+Economic Development Corporation has 75 percent of requests non-closed, however they are all In Progress. 
+Thankfully, no agency has a significant percent of requests sitting open or unspecified""")
+Question3
