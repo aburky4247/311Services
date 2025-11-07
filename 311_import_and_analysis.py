@@ -115,7 +115,6 @@ CREATE TABLE IF NOT EXISTS store_311_service_requests (
 );
 """)
 
-
 # store_311_agencies table creation if not already existing (only activates on first run)
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS store_311_agencies (
@@ -123,6 +122,18 @@ CREATE TABLE IF NOT EXISTS store_311_agencies (
     agency_name TEXT,
     FOREIGN KEY (agency) REFERENCES store_311_service_requests(agency)
 );
+""")
+
+# ref_311_request_count_by_agency tabe creation - used in analysis for later questions
+conn.execute("""DROP TABLE IF EXISTS ref_311_request_count_by_agency;""")
+
+conn.execute("""
+CREATE TABLE ref_311_request_count_by_agency(
+    agency TEXT PRIMARY KEY,
+    agency_name TEXT,
+    total_count_by_agency REAL,
+    FOREIGN KEY (agency) REFERENCES store_311_service_requests(agency)
+    );
 """)
 
 conn.commit()
@@ -362,17 +373,6 @@ SELECT DISTINCT
 FROM raw_311_service_requests;
 """
              )
-
-conn.execute("""DROP TABLE IF EXISTS ref_311_request_count_by_agency;""")
-
-conn.execute("""
-CREATE TABLE ref_311_request_count_by_agency(
-    agency TEXT PRIMARY KEY,
-    agency_name TEXT,
-    total_count_by_agency REAL,
-    FOREIGN KEY (agency) REFERENCES store_311_service_requests(agency)
-    );
-""")
 
 conn.execute("""
 INSERT INTO ref_311_request_count_by_agency (
