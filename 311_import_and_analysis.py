@@ -586,7 +586,7 @@ df = df.dropna(subset=["created_date"])
 
 df["month"] = df["created_date"].dt.to_period("M").astype(str)
 
-counts = (
+requests_per_capita = (
     df.groupby(["month", "borough"])
     .size()
     .unstack(fill_value=0)
@@ -601,19 +601,20 @@ borough_populations = {
 }
 
 for borough, population in borough_populations.items():
-    if borough in counts.columns:
-        counts[borough] = counts[borough] / population
+    if borough in requests_per_capita.columns:
+        requests_per_capita[borough] = requests_per_capita[borough] / population
 
 plt.figure(figsize=(14, 7))
-counts.plot(kind="bar", stacked=True, colormap="tab20", figsize=(14, 7))
+requests_per_capita.plot(kind="bar", stacked=True,
+                         colormap="tab20", figsize=(14, 7))
 
 print("How many service requests come per month, per borough, and does one borough stand out?")
 print("""Per the chart below, requests are relatively distributed by month, with a slight spike in January 25 (potentially from holiday backlog).
-Most requests are for Queens and Brooklyn, with the Bronx having a spike in January 25""")
+The Bronx has the most requests per capita""")
 
-plt.title("NYC 311 Service Requests per Population by Month and Borough", fontsize=14)
+plt.title("NYC 311 Service Requests per Capita by Month and Borough", fontsize=14)
 plt.xlabel("Month (Created Date)", fontsize=12)
-plt.ylabel("Requests by Population", fontsize=12)
+plt.ylabel("Requests per Capita", fontsize=12)
 plt.xticks(rotation=45, ha="right")
 plt.legend(title="Borough", bbox_to_anchor=(1.05, 1), loc="upper left")
 plt.tight_layout()
