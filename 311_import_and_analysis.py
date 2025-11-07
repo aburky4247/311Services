@@ -522,7 +522,6 @@ WHERE
     AND closed_date IS NOT NULL
     AND agency_name IS NOT NULL;
 """, conn)
-
 conn.close()
 
 df["created_date"] = pd.to_datetime(df["created_date"], errors="coerce")
@@ -532,6 +531,9 @@ df = df.dropna(subset=["created_date", "closed_date"])
 
 df["days_to_close"] = (df["closed_date"] - df["created_date"]
                        ).dt.total_seconds() / (24 * 3600)
+
+df = df[df["days_to_close"] >= 0]
+df = df[df["days_to_close"] < 3650]
 
 Question4 = (
     df.groupby("agency_name")["days_to_close"]
@@ -546,5 +548,12 @@ Question4 = (
 Question4["avg_days_to_close"] = Question4["avg_days_to_close"].round(2)
 Question4["std_days_to_close"] = Question4["std_days_to_close"].round(2)
 
+pd.set_option("display.max_rows", None)
+pd.set_option("display.max_columns", None)
+pd.set_option("display.width", 200)
+
 print("On average how long does it take from created_date to closed_date by agency?")
+print(""""Per the below table, the Department of Building, Department of Parks and Recreation, and Taxi and Limousine Commission have high avg_days_to_close
+and significant standard deviation. Additionally, the Office of the Sheriff, Economic Development Corporation, and Department of Education have high avg_days_to_close,
+however they have a significantly smaller sample size""")
 print(Question4)
