@@ -401,14 +401,17 @@ conn.commit()
 Question1 = pd.read_sql_query("""
 SELECT DISTINCT
     a.agency_name,
-    sr.status,
+    CASE sr.status = 'Closed'
+        WHEN  True THEN 'Closed'
+        ELSE 'Not Closed'
+    END AS status_closed,
     CASE resolution_action_updated_date IS NULL
         WHEN  True THEN 'Unresolved'
         ELSE 'Resolved'
     END AS Resolved,
     count(*) AS Count,
     total_count_by_agency,
-    CAST(count(*)/total_count_by_agency AS TEXT) AS percent_of_total_count
+    CAST((count(*)/total_count_by_agency)*100 AS TEXT) AS percent_of_total_count
 FROM store_311_service_requests sr
 LEFT JOIN store_311_agencies a
     ON sr.agency = a.agency
@@ -425,11 +428,14 @@ GROUP BY
         WHEN  True THEN 'Unresolved'
         ELSE 'Resolved'
     END,
-    sr.status
+    CASE sr.status = 'Closed'
+        WHEN  True THEN 'Closed'
+        ELSE 'Not Closed'
+    END
 """, conn)
 
 print("How many service requests are status = closed with no resolution or status <> closed with a resolution and is it concentrated on any particular agency?")
-print("""Per the below table, Department of Buildings has 21,524 requests that are open but marked resolved, making up 20 percent of their total request count
+print("""Per the below table, Department of Buildings has 21,524 requests that are not closed but marked resolved, making up 20 percent of their total request count
 Additionally, the Department of Parks and Recreation has a significant number of requests In Progress while marked Resolved""")
 print(Question1)
 
@@ -449,7 +455,7 @@ SELECT DISTINCT
     END AS closed_date_present,
     count(*) AS Count,
     total_count_by_agency,
-    CAST(count(*)/total_count_by_agency AS TEXT) AS percent_of_total_count
+    CAST((count(*)/total_count_by_agency)*100 AS TEXT) AS percent_of_total_count
 FROM store_311_service_requests sr
 LEFT JOIN store_311_agencies a
     ON sr.agency = a.agency
@@ -486,7 +492,7 @@ SELECT DISTINCT
     sr.status,
     count(*) AS Count,
     total_count_by_agency,
-    CAST(count(*)/total_count_by_agency AS TEXT) AS percent_of_total_count
+    CAST((count(*)/total_count_by_agency)*100 AS TEXT) AS percent_of_total_count
 FROM store_311_service_requests sr
 LEFT JOIN store_311_agencies a
     ON sr.agency = a.agency
@@ -534,7 +540,7 @@ df["days_to_close"] = (df["closed_date"] - df["created_date"]
                        ).dt.total_seconds() / (24 * 3600)
 
 df = df[df["days_to_close"] >= 0]
-df = df[df["days_to_close"] < 3650]
+df = df[df["days_to_close"] < np.percentile(df["days_to_close"], 99.99)]
 
 Question4 = (
     df.groupby("agency_name")["days_to_close"]
@@ -559,7 +565,6 @@ and significant standard deviation. Additionally, the Office of the Sheriff, Eco
 however they have a significantly smaller sample size""")
 print(Question4)
 
-
 # Question 5: How many service requests come per month, per borough, and does one borough stand out? PYTHON
 
 conn = sq.connect(DB)
@@ -570,7 +575,8 @@ SELECT
     created_date
 FROM store_311_service_requests sr
 WHERE 
-    created_date IS NOT NULL;
+    created_date IS NOT NULL
+    AND borough <> 'Unspecified';
 """, conn)
 conn.close()
 
@@ -586,17 +592,30 @@ counts = (
     .unstack(fill_value=0)
 )
 
-plt.figure(figsize=(12, 6))
+borough_populations = {
+    "BRONX": 1419000,
+    "BROOKLYN": 2646000,
+    "MANHATTAN": 1628000,
+    "QUEENS": 2330000,
+    "STATEN ISLAND": 492734
+}
+
+for borough, population in borough_populations.items():
+    if borough in counts.columns:
+        counts[borough] = counts[borough] / population
+
+plt.figure(figsize=(14, 7))
 counts.plot(kind="bar", stacked=True, colormap="tab20", figsize=(14, 7))
 
 print("How many service requests come per month, per borough, and does one borough stand out?")
 print("""Per the chart below, requests are relatively distributed by month, with a slight spike in January 25 (potentially from holiday backlog).
 Most requests are for Queens and Brooklyn, with the Bronx having a spike in January 25""")
 
-plt.title("NYC 311 Service Requests by Month and Borough", fontsize=14)
+plt.title("NYC 311 Service Requests per Population by Month and Borough", fontsize=14)
 plt.xlabel("Month (Created Date)", fontsize=12)
-plt.ylabel("Count of Requests", fontsize=12)
+plt.ylabel("Requests by Population", fontsize=12)
 plt.xticks(rotation=45, ha="right")
-plt.legend(title="Agency", bbox_to_anchor=(1.05, 1), loc="upper left")
+plt.legend(title="Borough", bbox_to_anchor=(1.05, 1), loc="upper left")
 plt.tight_layout()
+
 plt.show()
