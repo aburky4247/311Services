@@ -362,4 +362,71 @@ FROM raw_311_service_requests;
 """
              )
 
+conn.execute("""DROP TABLE IF EXISTS ref_311_request_count_by_agency;""")
+
+conn.execute("""
+CREATE TABLE ref_311_request_count_by_agency(
+    agency TEXT PRIMARY KEY,
+    agency_name TEXT,
+    total_count_by_agency REAL,
+    FOREIGN KEY (agency) REFERENCES store_311_service_requests(agency)
+    );
+""")
+
+conn.execute("""
+INSERT INTO ref_311_request_count_by_agency (
+    agency,
+    agency_name,
+    total_count_by_agency
+    )
+SELECT DISTINCT
+    sr.agency,
+    a.agency_name,
+    count(*) AS total_count_by_agency
+FROM store_311_service_requests sr
+LEFT JOIN store_311_agencies a
+    ON sr.agency = a.agency
+GROUP BY 
+    sr.agency,
+    a.agency_name;
+""")
+
 conn.commit()
+
+# Question 1: How many service requests are status = closed with no resolution and does any particular agency have more than others?
+# Notes - checked resolution fields and saw that sometimes it had a resolution_action_updated_date but no resolution_description
+
+Question1 = pd.read_sql_query("""
+SELECT DISTINCT
+    a.agency_name,
+    sr.status,
+    CASE resolution_action_updated_date IS NULL
+        WHEN  True THEN 'Unresolved'
+        ELSE 'Resolved'
+    END AS Resolved,
+    count(*) AS Count,
+    total_count_by_agency,
+    CAST(count(*)/total_count_by_agency AS TEXT) AS percent_of_total_count
+FROM store_311_service_requests sr
+LEFT JOIN store_311_agencies a
+    ON sr.agency = a.agency
+LEFT JOIN ref_311_request_count_by_agency ac
+    ON sr.agency = ac.agency
+WHERE (resolution_action_updated_date IS NULL
+    AND Status = 'Closed')
+    OR
+    (Status <> 'Closed'
+    AND resolution_action_updated_date IS NOT NULL)
+GROUP BY 
+    a.agency_name,
+    CASE resolution_action_updated_date IS NULL
+        WHEN  True THEN 'Unresolved'
+        ELSE 'Resolved'
+    END,
+    sr.status
+""", conn)
+
+print("How many service requests are status = closed with no resolution or status <> closed with a resolution and is it concentrated on any particular agency?")
+print("""Per the below table, Department of Buildings has 21,524 requests that are open but marked resolved, making up 20 percent of their total request count
+Additionally, the Department of Parks and Recreation has a significant number of requests In Progress while marked Resolved""")
+Question1
