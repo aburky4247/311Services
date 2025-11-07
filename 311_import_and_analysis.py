@@ -25,7 +25,7 @@ cursor.execute("""DROP TABLE IF EXISTS raw_311_service_requests""")
 
 cursor.execute("""CREATE TABLE raw_311_service_requests (
     unique_key TEXT PRIMARY KEY,
-    created_date TEXT,
+    created_date TEXT ,
     closed_date TEXT,
     agency TEXT,
     agency_name TEXT,
@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS store_311_service_requests (
 # store_311_agencies table creation if not already existing (only activates on first run)
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS store_311_agencies (
-    agency TEXT,
+    agency TEXT PRIMARY KEY,
     agency_name TEXT,
     FOREIGN KEY (agency) REFERENCES store_311_service_requests(agency)
 );
@@ -259,3 +259,107 @@ def import_to_raw():
 
 
 import_to_raw()
+
+# insert data from the raw table into store_311_service_requests and store_311_agencies
+
+conn.execute("""
+INSERT OR REPLACE INTO store_311_service_requests (
+    unique_key,
+    created_date,
+    closed_date,
+    agency,
+    complaint_type,
+    descriptor,
+    location_type,
+    incident_zip,
+    incident_address,
+    street_name,
+    cross_street_1,
+    cross_street_2,
+    intersection_street_1,
+    intersection_street_2,
+    address_type,
+    city,
+    landmark,
+    facility_type,
+    status,
+    due_date,
+    resolution_description,
+    resolution_action_updated_date,
+    community_board,
+    bbl,
+    borough,
+    x_coordinate_state_plane,
+    y_coordinate_state_plane,
+    open_data_channel_type,
+    park_facility_name,
+    park_borough,
+    vehicle_type,
+    taxi_company_borough,
+    taxi_pick_up_location,
+    bridge_highway_name,
+    bridge_highway_direction,
+    road_ramp,
+    bridge_highway_segment,
+    latitude,
+    longitude,
+    location
+)
+SELECT
+    unique_key,
+    created_date,
+    closed_date,
+    agency,
+    complaint_type,
+    descriptor,
+    location_type,
+    incident_zip,
+    incident_address,
+    street_name,
+    cross_street_1,
+    cross_street_2,
+    intersection_street_1,
+    intersection_street_2,
+    address_type,
+    city,
+    landmark,
+    facility_type,
+    status,
+    due_date,
+    resolution_description,
+    resolution_action_updated_date,
+    community_board,
+    bbl,
+    borough,
+    x_coordinate_state_plane,
+    y_coordinate_state_plane,
+    open_data_channel_type,
+    park_facility_name,
+    park_borough,
+    vehicle_type,
+    taxi_company_borough,
+    taxi_pick_up_location,
+    bridge_highway_name,
+    bridge_highway_direction,
+    road_ramp,
+    bridge_highway_segment,
+    latitude,
+    longitude,
+    location
+FROM raw_311_service_requests;
+"""
+             )
+
+conn.execute("""
+INSERT OR REPLACE INTO store_311_agencies (
+    agency,
+    agency_name
+    )
+SELECT DISTINCT
+    agency,
+    agency_name
+FROM raw_311_service_requests;
+"""
+             )
+
+conn.commit()
