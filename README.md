@@ -7,16 +7,21 @@ In this repository, you will find the following files that meet the Deliverables
 
 -analysis.ipynb: This is the same as my 311_import_and_analysis.py file, but I recommend using it because of the capabilities included in Jupyter notebooks
 
+-requirements.txt: necessary pip installs for the extensions utilized in analysis.ipynb
+
 ---------------------------------------------------------------
 
 Instructions for execution:
 
 -I import multiple extensions that are utilized throughout my code at the start. The following should be run on your terminal to ensure you have the proper installations to use these packages (this can also be found in requirements.txt:
-  -pip install [fill in]
+  pip install pandas
+  pip install requests
+  pip install matplotlib
+  pip install numpy
 
--Now you can run the 311_import_and_analysis.ipynb file
+-Now you can run the analysis.ipynb file
 
--This will pull data from the trailing ~13 months from the NYC OpenData 311 Service Requests 2010 to present online database. After it is run the first time, it can be run again to pull any data that has a created_date after the maximum created_date of the previous pull or a resolution_action_updated_date greater than the maximum created_date of the previous pull
+-This will pull data from the trailing ~13 months from the NYC OpenData 311 Service Requests 2010 to present online database. After it is run the first time and the data is present in the store_311_service_requests table, it can be run again to pull any data that has a created_date after the maximum created_date of the store table or a resolution_action_updated_date greater than the maximum created_date of the store table
 
 -To aid in data normalization, agency_name is not included in the store_311_service_requests table and is instead in store_311_agencies table, along with agency (additional data normalization opportunity called out below)
 
@@ -29,7 +34,7 @@ Instructions for execution:
     This question helps to identify service requests that should be updated, as their values do not align with each other
   
   -Q3: Which Agency has the most non-closed service requests, and of the non-closed, how many are unspecified or open?
-    This question helps identify agencies that are lacking in closing their service requests
+    This question helps identify agencies that are lacking in assigning and closing their service requests
   
   -Q4: On average how long does it take from created_date to closed_date by agency?
     This question helps identify agencies that are leaving service requests open for too long
@@ -46,7 +51,6 @@ Instructions for execution:
 See below a screenshot of the table relationships I set up:
 <img width="913" height="720" alt="image" src="https://github.com/user-attachments/assets/57b76b0d-a219-4bd7-a328-c5fdcbfd703c" />
 
-
 ---------------------------------------------------------------
 
 Additional opportunities given more time:
@@ -55,4 +59,4 @@ Additional opportunities given more time:
 
 -Better trailing 13 months definition: I selected trailing 13 months to have a full 12 months of data + the current month of data. The current methodology to get 13 months is to subtract (13 * 30) days from today. I would like to change this to use months instead of days.
 
--More statistical analysis in Questions 4 and 5: For question 4, explore the data more to determine the exclusion bounds and include the lower and upper bound 95 percentiles in the table. For question 5, run a chi-square test to see if January's increase is statistically significant.
+-More statistical analysis in Questions 4 and 5: For question 4, I could explore the data more to determine the exclusion bounds and include the lower and upper bound 95 percentiles in the table. For question 5, I could run a chi-square test to see if January's increase is statistically significant and if Bronx's higher requests per capita is statistically significant.
