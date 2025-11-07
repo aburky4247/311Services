@@ -5,11 +5,13 @@ In this repository, you will find the following files that meet the Deliverables
 
 -311_import_and_analysis.py: This contains both the script to build the SQLite tables and the script that runs the analysis for my five questions. I built and tested the code in my Jupyter Notebook and moved it into this .py file as I progressed, saving and pushing my changes as I went. This file has the same contents as my .ipynb file, but it contains version history for review
 
--311_import_and_analysis.ipynb: This is the same as my .py file, but I recommend using it because of the capabilities included in Jupyter notebooks
+-analysis.ipynb: This is the same as my 311_import_and_analysis.py file, but I recommend using it because of the capabilities included in Jupyter notebooks
+
+
 
 Instructions for execution:
 
--I import multiple packages that are utilized throughout my code at the start. The following should be run on your terminal to ensure you have the proper installations to use these packages:
+-I import multiple extensions that are utilized throughout my code at the start. The following should be run on your terminal to ensure you have the proper installations to use these packages (this can also be found in requirements.txt:
   -pip install [fill in]
 
 -Now you can run the 311_import_and_analysis.ipynb file
@@ -18,7 +20,7 @@ Instructions for execution:
 
 -In order to aid in data normalization, agency_name is not included in the store_311_service_requests table and is instead in store_311_agencies table, along with agency (additional data normalization opportunity called out below)
 
--Five questions are found at the bottom, with the first 3 being answered with SQL and the last 2 being answered with Python. See these questions below:
+-Five questions are found at the bottom, with the first 3 being answered with SQL and the last 2 being answered with Python. The questions are each in their own code block within the Jupyter Notebook, and their outputs are displayed below their respective code blocks. If running from the .py file, the outputs for each question are printed in order, and a chart is produced as a figure for question five. See each question below:
   
   -Q1: How many service requests are status = closed with no resolution or status <> closed with a resolution, and is it concentrated on any particular agency?
     This question helps to identify service requests that should be updated, as their values do not align with each other
@@ -35,3 +37,6 @@ Instructions for execution:
   -Q5: How many service requests come per month, per borough, and does one borough stand out?
     This question identifies which boroughs receive the most service requests, and if there are any jumps for a particular month
 
+
+
+-311_Service_Requests selection: This database was easily accessible and had a lot of information to utilize. There was an opportunity for data normalization through the agency and agency_name fields. Also, there seemed to be an opportunity for questions that could target particular agencies or boroughs for service request records that should be updated
