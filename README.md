@@ -43,6 +43,12 @@ Instructions for execution:
 
 ---------------------------------------------------------------
 
+See below a screenshot of the table relationships I set up:
+<img width="913" height="720" alt="image" src="https://github.com/user-attachments/assets/57b76b0d-a219-4bd7-a328-c5fdcbfd703c" />
+
+
+---------------------------------------------------------------
+
 Additional opportunities given more time:
 
 -Further data normalization: other fields could have been pulled from the main service requests table and put into separate lookup tables, but they would have needed manipulation, particularly where a child was NULL across multiple parents. I saw an opportunity for additional normalization through the location-based fields (e.g. address, street name, city, borough, and lat/long). Similarly, the complaint type and descriptor could have been extracted in a similar manner to agency and agency_name.
