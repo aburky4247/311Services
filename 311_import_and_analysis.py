@@ -5,6 +5,7 @@ from io import StringIO
 from datetime import datetime, timedelta
 from time import sleep
 import matplotlib.pyplot as plt
+import numpy as np
 
 pd.set_option('display.max_columns', None)
 
