@@ -7,7 +7,7 @@ In this repository, you will find the following files that meet the Deliverables
 
 -analysis.ipynb: This is the same as my 311_import_and_analysis.py file, but I recommend using it because of the capabilities included in Jupyter notebooks
 
-
+---------------------------------------------------------------
 
 Instructions for execution:
 
@@ -37,6 +37,6 @@ Instructions for execution:
   -Q5: How many service requests come per month, per borough, and does one borough stand out?
     This question identifies which boroughs receive the most service requests, and if there are any jumps for a particular month
 
-
+---------------------------------------------------------------
 
 -311_Service_Requests selection: This database was easily accessible and had a lot of information to utilize. There was an opportunity for data normalization through the agency and agency_name fields. Also, there seemed to be an opportunity for questions that could target particular agencies or boroughs for service request records that should be updated
