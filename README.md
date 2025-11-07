@@ -18,7 +18,7 @@ Instructions for execution:
 
 -This will pull data from the trailing ~13 months from the NYC OpenData 311 Service Requests 2010 to present online database. After it is run the first time, it can be run again to pull any data that has a created_date after the maximum created_date of the previous pull or a resolution_action_updated_date greater than the maximum created_date of the previous pull
 
--In order to aid in data normalization, agency_name is not included in the store_311_service_requests table and is instead in store_311_agencies table, along with agency (additional data normalization opportunity called out below)
+-To aid in data normalization, agency_name is not included in the store_311_service_requests table and is instead in store_311_agencies table, along with agency (additional data normalization opportunity called out below)
 
 -Five questions are found at the bottom, with the first 3 being answered with SQL and the last 2 being answered with Python. The questions are each in their own code block within the Jupyter Notebook, and their outputs are displayed below their respective code blocks. If running from the .py file, the outputs for each question are printed in order, and a chart is produced as a figure for question five. See each question below:
   
@@ -40,3 +40,11 @@ Instructions for execution:
 ---------------------------------------------------------------
 
 -311_Service_Requests selection: This database was easily accessible and had a lot of information to utilize. There was an opportunity for data normalization through the agency and agency_name fields. Also, there seemed to be an opportunity for questions that could target particular agencies or boroughs for service request records that should be updated
+
+---------------------------------------------------------------
+
+Additional opportunities given more time:
+
+-Further data normalization: other fields could have been pulled from the main service requests table and put into separate lookup tables, but they would have needed manipulation, particularly where a child was NULL across multiple parents. I saw an opportunity for additional normalization through the location-based fields (e.g. address, street name, city, borough, and lat/long). Similarly, the complaint type and descriptor could have been extracted in a similar manner to agency and agency_name.
+
+-Better trailing 13 months definition: I selected trailing 13 months to have a full 12 months of data + the current month of data. The current methodology to get 13 months is to subtract (13 * 30) days from today. I would like to change this to use months instead of days.
