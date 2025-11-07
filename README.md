@@ -54,3 +54,5 @@ Additional opportunities given more time:
 -Further data normalization: other fields could have been pulled from the main service requests table and put into separate lookup tables, but they would have needed manipulation, particularly where a child was NULL across multiple parents. I saw an opportunity for additional normalization through the location-based fields (e.g. address, street name, city, borough, and lat/long). Similarly, the complaint type and descriptor could have been extracted in a similar manner to agency and agency_name.
 
 -Better trailing 13 months definition: I selected trailing 13 months to have a full 12 months of data + the current month of data. The current methodology to get 13 months is to subtract (13 * 30) days from today. I would like to change this to use months instead of days.
+
+-More statistical analysis in Questions 4 and 5: For question 4, explore the data more to determine the exclusion bounds and include the lower and upper bound 95 percentiles in the table. For question 5, run a chi-square test to see if January's increase is statistically significant.
